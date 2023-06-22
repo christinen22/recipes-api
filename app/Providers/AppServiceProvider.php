@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Validator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,8 +22,11 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
+
     public function boot()
     {
-        //
+        Validator::extend('url', function ($attribute, $value, $parameters, $validator) {
+            return filter_var($value, FILTER_VALIDATE_URL) !== false;
+        });
     }
 }

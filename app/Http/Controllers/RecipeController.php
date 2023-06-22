@@ -43,16 +43,21 @@ class RecipeController extends Controller
         $request->validate([
             'title' => 'required',
             'body' => 'required',
-            'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Validation rules for the image file
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validation rules for the image file
+            'image_url' => 'nullable|url', // Validation rule for the image URL
             'category_id' => 'required|exists:categories,id',
         ]);
+        $imagePath = null;
 
         // Handle image upload
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imagePath = $image->store('recipe_images', 'public');
-        } else {
-            $imagePath = null;
+        }
+
+        // Use the image URL if provided and no image upload
+        if (!$imagePath && $request->has('image_url')) {
+            $imagePath = $request->input('image_url');
         }
 
         $recipe = Recipe::create([
@@ -61,6 +66,7 @@ class RecipeController extends Controller
             'image' => $imagePath,
             'category_id' => $request->input('category_id'),
         ]);
+
 
         return response()->json($recipe, 201);
     }
