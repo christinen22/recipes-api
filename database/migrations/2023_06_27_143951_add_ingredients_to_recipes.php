@@ -14,7 +14,7 @@ class AddIngredientsToRecipes extends Migration
     public function up()
     {
         Schema::table('recipes', function (Blueprint $table) {
-            $table->json('ingredients')->nullable();
+            $table->text('ingredients')->nullable();
         });
     }
 
