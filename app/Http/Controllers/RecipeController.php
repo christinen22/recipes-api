@@ -62,7 +62,9 @@ class RecipeController extends Controller
 
         $recipe = Recipe::create([
             'title' => $request->input('title'),
+            'category' => $request->input('category'),
             'body' => $request->input('body'),
+            'ingredients' => $request->input('ingredients'),
             'image' => $imagePath,
             'category_id' => $request->input('category_id'),
         ]);
