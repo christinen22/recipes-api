@@ -68,7 +68,7 @@ class RecipeController extends Controller
 
             if (json_last_error() !== JSON_ERROR_NONE) {
                 // Handle the case where 'ingredients' is not a valid JSON string
-                // Return an appropriate error response or take necessary action
+                return response()->json(['message' => 'Invalid JSON format for ingredients.'], 400);
             }
 
             $recipe = Recipe::create([
