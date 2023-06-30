@@ -40,47 +40,51 @@ class RecipeController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'title' => 'required',
-            'body' => 'required',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validation rules for the image file
-            'image_url' => 'nullable|url', // Validation rule for the image URL
-            'category_id' => 'required|exists:categories,id',
-            'ingredients' => 'required',
-        ]);
-        $imagePath = null;
+        try {
+            $request->validate([
+                'title' => 'required',
+                'body' => 'required',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validation rules for the image file
+                'image_url' => 'nullable|url', // Validation rule for the image URL
+                'category_id' => 'required|exists:categories,id',
 
-        // Handle image upload
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imagePath = $image->store('recipe_images', 'public');
+            ]);
+            $imagePath = null;
+
+            // Handle image upload
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $imagePath = $image->store('recipe_images', 'public');
+            }
+
+            // Use the image URL if provided and no image upload
+            if (!$imagePath && $request->has('image_url')) {
+                $imagePath = $request->input('image_url');
+            }
+
+            // Validate and parse the 'ingredients' field
+            $ingredients = $request->input('ingredients');
+            $decodedIngredients = json_decode($ingredients);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                // Handle the case where 'ingredients' is not a valid JSON string
+                // Return an appropriate error response or take necessary action
+            }
+
+            $recipe = Recipe::create([
+                'title' => $request->input('title'),
+                'category' => $request->input('category'),
+                'body' => $request->input('body'),
+                'ingredients' => $request->input('ingredients'),
+                'image' => $imagePath,
+                'category_id' => $request->input('category_id'),
+            ]);
+
+
+            return response()->json($recipe, 201);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error: ' . $e->getMessage()], 500);
         }
-
-        // Use the image URL if provided and no image upload
-        if (!$imagePath && $request->has('image_url')) {
-            $imagePath = $request->input('image_url');
-        }
-
-        // Validate and parse the 'ingredients' field
-        $ingredients = $request->input('ingredients');
-        $decodedIngredients = json_decode($ingredients);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            // Handle the case where 'ingredients' is not a valid JSON string
-            // Return an appropriate error response or take necessary action
-        }
-
-        $recipe = Recipe::create([
-            'title' => $request->input('title'),
-            'category' => $request->input('category'),
-            'body' => $request->input('body'),
-            'ingredients' => $decodedIngredients,
-            'image' => $imagePath,
-            'category_id' => $request->input('category_id'),
-        ]);
-
-
-        return response()->json($recipe, 201);
     }
 
     /**
