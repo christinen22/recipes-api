@@ -46,6 +46,7 @@ class RecipeController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validation rules for the image file
             'image_url' => 'nullable|url', // Validation rule for the image URL
             'category_id' => 'required|exists:categories,id',
+            'ingredients' => 'required',
         ]);
         $imagePath = null;
 
@@ -73,7 +74,7 @@ class RecipeController extends Controller
             'title' => $request->input('title'),
             'category' => $request->input('category'),
             'body' => $request->input('body'),
-            'ingredients' => $request->input('ingredients'),
+            'ingredients' => $decodedIngredients,
             'image' => $imagePath,
             'category_id' => $request->input('category_id'),
         ]);
