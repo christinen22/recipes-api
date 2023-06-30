@@ -54,7 +54,9 @@ class RecipeController extends Controller
             // Handle image upload
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
-                $imagePath = $image->store('recipe_images', 'public');
+                $imagePath = $image->store('public/recipe_images');
+            } else {
+                $imagePath = null;
             }
 
             // Use the image URL if provided and no image upload
@@ -80,6 +82,14 @@ class RecipeController extends Controller
                 'category_id' => $request->input('category_id'),
             ]);
 
+            // Retrieve the full image URL
+            $imageUrl = $imagePath ? url(Storage::url($imagePath)) : null;
+
+            // Return the response with the recipe and image URL
+            return response()->json([
+                'recipe' => $recipe,
+                'image_url' => $imageUrl,
+            ], 201);
 
             return response()->json($recipe, 201);
         } catch (\Exception $e) {
