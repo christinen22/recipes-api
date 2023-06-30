@@ -60,6 +60,15 @@ class RecipeController extends Controller
             $imagePath = $request->input('image_url');
         }
 
+        // Validate and parse the 'ingredients' field
+        $ingredients = $request->input('ingredients');
+        $decodedIngredients = json_decode($ingredients);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            // Handle the case where 'ingredients' is not a valid JSON string
+            // Return an appropriate error response or take necessary action
+        }
+
         $recipe = Recipe::create([
             'title' => $request->input('title'),
             'category' => $request->input('category'),
