@@ -54,9 +54,7 @@ class RecipeController extends Controller
             // Handle image upload
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
-                $imagePath = $image->store('public/recipe_images');
-            } else {
-                $imagePath = null;
+                $imagePath = 'storage/' . $image->store('recipe_images', 'public');
             }
 
             // Use the image URL if provided and no image upload
