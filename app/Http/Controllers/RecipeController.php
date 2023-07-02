@@ -83,7 +83,10 @@ class RecipeController extends Controller
             ]);
 
             // Retrieve the full image URL
-            $imageUrl = $imagePath ? url(Storage::url($imagePath)) : null;
+            //$imageUrl = $imagePath ? url(Storage::url($imagePath)) : null;
+
+            $imagePath = $request->file('image')->store('recipe_images', 'public');
+            $imageUrl = url(Storage::url($imagePath));
 
             // Return the response with the recipe and image URL
             return response()->json([
