@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Recipe;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\File;
 
 class RecipeController extends Controller
 {
@@ -109,6 +111,23 @@ class RecipeController extends Controller
         ];
     }
 
+    public function getRecipeImage($filename)
+    {
+        $path = 'recipe_images/' . $filename;
+
+        if (Storage::disk('public')->exists($path)) {
+            $fileContents = Storage::disk('public')->get($path);
+
+            $fileExtension = File::extension($path); //method to retrieve the file extension
+            $contentType = File::mimeType($path); //mimeType since I dont know what image type the user might upload
+
+            return Response::make($fileContents, 200, [
+                'Content-Type' => $contentType,
+            ]);
+        }
+
+        abort(404);
+    }
     /**
      * Show the form for editing the specified resource.
      *
