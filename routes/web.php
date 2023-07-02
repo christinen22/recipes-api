@@ -19,6 +19,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('recipe_images/{filename}', 'RecipeController@getRecipeImage')->name('recipe.image');
+
 Route::resource('recipes', RecipeController::class);
 
 Route::resource('categories', CategoryController::class);
