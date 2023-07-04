@@ -17,7 +17,8 @@ class RecipeController extends Controller
      */
     public function index()
     {
-        $recipes = Recipe::latest()->paginate(10);
+
+        $recipes = Recipe::with('category')->latest()->paginate(10);
         return [
             "status" => 1,
             "data" => $recipes
