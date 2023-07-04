@@ -10,6 +10,7 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Category::withCount('recipes')->get();
+        $categories = Category::with('recipes:id,title')->get();
 
         return response()->json($categories);
     }
