@@ -17,4 +17,11 @@ class Category extends Model
     protected $fillable = [
         'name',
     ];
+
+    protected $appends = ['recipes'];
+
+    public function getRecipesAttribute()
+    {
+        return $this->recipes()->get(['id', 'title']);
+    }
 }
