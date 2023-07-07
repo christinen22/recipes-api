@@ -23,20 +23,15 @@ class RecipeController extends Controller
             $query->where('title', 'like', '%' . request('search') . '%');
         }
 
-        // Paginated results
-        $recipes = $query->with('category')->latest()->paginate(
-            request()->has('per_page') ? intval(request('per_page')) : 10
-        )->appends(
-            request()->query()
-        );
+        $recipes = $query->with('category')->latest()->paginate(10)->appends(request()->query());
 
         if (empty(request('search'))) {
             $allRecipes = Recipe::with('category')->get();
             $recipes = new \Illuminate\Pagination\LengthAwarePaginator(
                 $allRecipes,
                 $allRecipes->count(),
-                $recipes->perPage(),
-                $recipes->currentPage()
+                10,
+                1
             );
         }
 
