@@ -32,9 +32,12 @@ class RecipeController extends Controller
 
         if (empty(request('search'))) {
             $allRecipes = Recipe::with('category')->get();
-            $recipes->items = $allRecipes;
-            $recipes->total = $allRecipes->count();
-            $recipes->perPage = $allRecipes->count();
+            $recipes = new \Illuminate\Pagination\LengthAwarePaginator(
+                $allRecipes,
+                $allRecipes->count(),
+                $recipes->perPage(),
+                $recipes->currentPage()
+            );
         }
 
         return [
