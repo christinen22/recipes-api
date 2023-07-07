@@ -15,25 +15,17 @@ class RecipeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $query = Recipe::query();
+        $searchQuery = $request->query('search');
 
-        if (request()->has('search')) {
-            $query->where('title', 'like', '%' . request('search') . '%');
-        }
-
-        $recipes = $query->with('category')->latest()->paginate(10)->appends(request()->query());
-
-        if (empty(request('search'))) {
-            $allRecipes = Recipe::with('category')->get();
-            $recipes = new \Illuminate\Pagination\LengthAwarePaginator(
-                $allRecipes,
-                $allRecipes->count(),
-                10,
-                1
-            );
-        }
+        // Query builder with search condition
+        $recipes = Recipe::with('category')
+            ->when($searchQuery, function ($query) use ($searchQuery) {
+                $query->where('title', 'like', '%' . $searchQuery . '%');
+            })
+            ->latest()
+            ->paginate(10);
 
         return [
             "status" => 1,
