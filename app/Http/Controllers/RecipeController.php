@@ -17,8 +17,26 @@ class RecipeController extends Controller
      */
     public function index()
     {
+        $query = Recipe::query();
 
-        $recipes = Recipe::with('category')->latest()->paginate(10);
+        if (request()->has('search')) {
+            $query->where('title', 'like', '%' . request('search') . '%');
+        }
+
+        // Paginated results
+        $recipes = $query->with('category')->latest()->paginate(
+            request()->has('per_page') ? intval(request('per_page')) : 10
+        )->appends(
+            request()->query()
+        );
+
+        if (empty(request('search'))) {
+            $allRecipes = Recipe::with('category')->get();
+            $recipes->items = $allRecipes;
+            $recipes->total = $allRecipes->count();
+            $recipes->perPage = $allRecipes->count();
+        }
+
         return [
             "status" => 1,
             "data" => $recipes
