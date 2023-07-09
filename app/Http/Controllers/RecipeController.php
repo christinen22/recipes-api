@@ -7,7 +7,7 @@ use App\Models\Recipe;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\File;
-use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Str;
 
 class RecipeController extends Controller
 {
@@ -68,12 +68,25 @@ class RecipeController extends Controller
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
                 $imagePath = 'storage/' . $image->store('recipe_images', 'public');
+            } elseif ($request->has('image_url')) {
+                $imageUrl = $request->input('image_url');
+
+                // Extract the image file from the data URI
+                $data = explode(',', $imageUrl);
+                $imageData = base64_decode($data[1]);
+                $extension = Str::afterLast($data[0], '/');
+                $fileName = Str::random(40) . '.' . $extension;
+
+                // Store the image file
+                Storage::disk('public')->put('recipe_images/' . $fileName, $imageData);
+                $imagePath = 'storage/recipe_images/' . $fileName;
             }
 
-            // Use the image URL if provided and no image upload
+
+            /*  // Use the image URL if provided and no image upload
             if (!$imagePath && $request->has('image_url')) {
                 $imagePath = $request->input('image_url');
-            }
+            } */
 
             // Validate and parse the 'ingredients' field
             $ingredients = $request->input('ingredients');
@@ -94,18 +107,16 @@ class RecipeController extends Controller
             ]);
 
             // Retrieve the full image URL
-            //$imageUrl = $imagePath ? url(Storage::url($imagePath)) : null;
+            $imageUrl = $imagePath ? url(Storage::url($imagePath)) : null;
 
-            $imagePath = $request->file('image')->store('recipe_images', 'public');
-            $imageUrl = url(Storage::url($imagePath));
+            /*  $imagePath = $request->file('image')->store('recipe_images', 'public');
+            $imageUrl = url(Storage::url($imagePath)); */
 
             // Return the response with the recipe and image URL
             return response()->json([
                 'recipe' => $recipe,
                 'image_url' => $imageUrl,
             ], 201);
-
-            return response()->json($recipe, 201);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error: ' . $e->getMessage()], 500);
         }
