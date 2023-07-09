@@ -59,6 +59,7 @@ class RecipeController extends Controller
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validation rules for the image file
                 'image_url' => 'nullable|url', // Validation rule for the image URL
                 'category_id' => 'required|exists:categories,id',
+
             ]);
 
             $imagePath = null;
@@ -67,16 +68,11 @@ class RecipeController extends Controller
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
                 $imagePath = 'storage/' . $image->store('recipe_images', 'public');
-            } elseif ($request->has('image_url')) {
-                $imageData = $request->input('image_url');
+            }
 
-                // Check if the image data is a base64-encoded data URI
-                if (preg_match('/^data:image\/(\w+);base64,/', $imageData)) {
-                    $extension = explode('/', mime_content_type($imageData))[1];
-                    $imageData = str_replace('data:image/' . $extension . ';base64,', '', $imageData);
-                    $image = UploadedFile::createFromBase64($imageData, 'filename.' . $extension);
-                    $imagePath = 'storage/' . $image->store('recipe_images', 'public');
-                }
+            // Use the image URL if provided and no image upload
+            if (!$imagePath && $request->has('image_url')) {
+                $imagePath = $request->input('image_url');
             }
 
             // Validate and parse the 'ingredients' field
@@ -97,13 +93,19 @@ class RecipeController extends Controller
                 'category_id' => $request->input('category_id'),
             ]);
 
-            $imageUrl = $imagePath ? url(Storage::url($imagePath)) : null;
+            // Retrieve the full image URL
+            //$imageUrl = $imagePath ? url(Storage::url($imagePath)) : null;
+
+            $imagePath = $request->file('image')->store('recipe_images', 'public');
+            $imageUrl = url(Storage::url($imagePath));
 
             // Return the response with the recipe and image URL
             return response()->json([
                 'recipe' => $recipe,
                 'image_url' => $imageUrl,
             ], 201);
+
+            return response()->json($recipe, 201);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error: ' . $e->getMessage()], 500);
         }
