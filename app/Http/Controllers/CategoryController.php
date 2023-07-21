@@ -27,7 +27,8 @@ class CategoryController extends Controller
 
     public function show($id)
     {
-        $category = Category::findOrFail($id);
+        $category = Category::with('recipes')->findOrFail($id);
+        $category->recipes->makeHidden(['created_at', 'updated_at']);
 
         return response()->json($category);
     }
