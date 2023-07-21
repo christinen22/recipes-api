@@ -27,8 +27,9 @@ class CategoryController extends Controller
 
     public function show($id)
     {
-        $category = Category::with('recipes')->findOrFail($id);
-        $category->recipes->makeHidden(['created_at', 'updated_at']);
+        $category = Category::with(['recipes' => function ($query) {
+            $query->select('id', 'title', 'image'); // Include the 'image' property
+        }])->findOrFail($id);
 
         return response()->json($category);
     }
