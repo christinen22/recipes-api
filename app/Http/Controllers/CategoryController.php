@@ -27,9 +27,8 @@ class CategoryController extends Controller
 
     public function show($id)
     {
-        $category = Category::with(['recipes' => function ($query) {
-            $query->select('id', 'title', 'image'); // Include the 'image' property
-        }])->findOrFail($id);
+        $category = Category::with('recipes')->findOrFail($id);
+        $category->recipes->makeVisible(['image']); // Make the 'image' property visible
 
         return response()->json($category);
     }
