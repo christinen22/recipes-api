@@ -83,7 +83,7 @@ class RecipeController extends Controller
 
             // Convert ingredients to have actual line breaks (\n)
             $ingredients = $request->input('ingredients');
-            $ingredientsWithLineBreaks = stripcslashes($ingredients);
+            $ingredientsWithLineBreaks = str_replace("\n* ", "\n", $ingredients);
 
             $recipe = Recipe::create([
                 'title' => $request->input('title'),
@@ -93,7 +93,6 @@ class RecipeController extends Controller
                 'image' => $imagePath,
                 'category_id' => $request->input('category_id'),
             ]);
-
 
             // Retrieve the full image URL
             $imageUrl = $imagePath ? url(Storage::url($imagePath)) : null;
