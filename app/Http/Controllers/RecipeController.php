@@ -59,7 +59,6 @@ class RecipeController extends Controller
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validation rules for the image file
                 'image_url' => 'nullable|url', // Validation rule for the image URL
                 'category_id' => 'required|exists:categories,id',
-
             ]);
 
             $imagePath = null;
@@ -82,35 +81,21 @@ class RecipeController extends Controller
                 $imagePath = 'storage/recipe_images/' . $fileName;
             }
 
-
-            /*  // Use the image URL if provided and no image upload
-            if (!$imagePath && $request->has('image_url')) {
-                $imagePath = $request->input('image_url');
-            } */
-
-            // Validate and parse the 'ingredients' field
+            // Convert ingredients to have actual line breaks (\n)
             $ingredients = $request->input('ingredients');
-            $decodedIngredients = json_decode($ingredients);
-
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                // Handle the case where 'ingredients' is not a valid JSON string
-                return response()->json(['message' => 'Invalid JSON format for ingredients.'], 400);
-            }
+            $ingredientsWithLineBreaks = str_replace("\n* ", "\n", $ingredients);
 
             $recipe = Recipe::create([
                 'title' => $request->input('title'),
                 'category' => $request->input('category'),
                 'body' => $request->input('body'),
-                'ingredients' => $request->input('ingredients'),
+                'ingredients' => $ingredientsWithLineBreaks, // Save ingredients with actual line breaks
                 'image' => $imagePath,
                 'category_id' => $request->input('category_id'),
             ]);
 
             // Retrieve the full image URL
             $imageUrl = $imagePath ? url(Storage::url($imagePath)) : null;
-
-            /*  $imagePath = $request->file('image')->store('recipe_images', 'public');
-            $imageUrl = url(Storage::url($imagePath)); */
 
             // Return the response with the recipe and image URL
             return response()->json([
