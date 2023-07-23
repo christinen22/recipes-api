@@ -56,7 +56,6 @@ class RecipeController extends Controller
             $request->validate([
                 'title' => 'required',
                 'body' => 'required',
-                'ingredients' => 'required',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validation rules for the image file
                 'image_url' => 'nullable|url', // Validation rule for the image URL
                 'category_id' => 'required|exists:categories,id',
@@ -82,15 +81,15 @@ class RecipeController extends Controller
                 $imagePath = 'storage/recipe_images/' . $fileName;
             }
 
-            // Replace \n with <br> before saving
-            $body = str_replace("\n", "<br>", $request->input('body'));
-            $ingredients = str_replace("\n", "<br>", $request->input('ingredients'));
+            // Convert ingredients to have actual line breaks (\n)
+            $ingredients = $request->input('ingredients');
+            $ingredientsWithLineBreaks = str_replace("\n* ", "\n", $ingredients);
 
             $recipe = Recipe::create([
                 'title' => $request->input('title'),
                 'category' => $request->input('category'),
-                'body' => $body, // Save body with actual line breaks
-                'ingredients' => $ingredients, // Save ingredients with actual line breaks
+                'body' => $request->input('body'),
+                'ingredients' => $ingredientsWithLineBreaks, // Save ingredients with actual line breaks
                 'image' => $imagePath,
                 'category_id' => $request->input('category_id'),
             ]);
