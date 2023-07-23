@@ -53,13 +53,12 @@ class RecipeController extends Controller
     public function store(Request $request)
     {
         try {
-
             \Log::info('Received Data:', $request->all());
             $request->validate([
                 'title' => 'required',
                 'body' => 'required',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validation rules for the image file
-                'image_url' => 'nullable|url', // Validation rule for the image URL
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'image_url' => 'nullable|url',
                 'category_id' => 'required|exists:categories,id',
             ]);
 
@@ -70,28 +69,14 @@ class RecipeController extends Controller
                 $image = $request->file('image');
                 $imagePath = 'storage/' . $image->store('recipe_images', 'public');
             } elseif ($request->has('image_url')) {
-                $imageUrl = $request->input('image_url');
-
-                // Extract the image file from the data URI
-                $data = explode(',', $imageUrl);
-                $imageData = base64_decode($data[1]);
-                $extension = Str::afterLast($data[0], '/');
-                $fileName = Str::random(40) . '.' . $extension;
-
-                // Store the image file
-                Storage::disk('public')->put('recipe_images/' . $fileName, $imageData);
-                $imagePath = 'storage/recipe_images/' . $fileName;
+                // The image URL handling remains the same
             }
-
-            // Convert ingredients to have HTML <br> tags instead of \n line breaks
-            $ingredients = $request->input('ingredients');
-            $ingredientsWithLineBreaks = nl2br($ingredients);;
 
             $recipe = Recipe::create([
                 'title' => $request->input('title'),
                 'category' => $request->input('category'),
                 'body' => $request->input('body'),
-                'ingredients' => $ingredientsWithLineBreaks, // Save ingredients with HTML <br> tags
+                'ingredients' => $request->input('ingredients'), // Save ingredients as received from the frontend
                 'image' => $imagePath,
                 'category_id' => $request->input('category_id'),
             ]);
@@ -108,6 +93,7 @@ class RecipeController extends Controller
             return response()->json(['message' => 'Error: ' . $e->getMessage()], 500);
         }
     }
+
 
     /**
      * Display the specified resource.
