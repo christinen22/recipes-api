@@ -69,14 +69,22 @@ class RecipeController extends Controller
                 $image = $request->file('image');
                 $imagePath = 'storage/' . $image->store('recipe_images', 'public');
             } elseif ($request->has('image_url')) {
-                // The image URL handling remains the same
+                $imageUrl = $request->input('image_url');
+                // Extract the image file from the data URI
+                $data = explode(',', $imageUrl);
+                $imageData = base64_decode($data[1]);
+                $extension = Str::afterLast($data[0], '/');
+                $fileName = Str::random(40) . '.' . $extension;
+                // Store the image file
+                Storage::disk('public')->put('recipe_images/' . $fileName, $imageData);
+                $imagePath = 'storage/recipe_images/' . $fileName;
             }
 
             $recipe = Recipe::create([
                 'title' => $request->input('title'),
                 'category' => $request->input('category'),
                 'body' => $request->input('body'),
-                'ingredients' => $request->input('ingredients'), // Save ingredients as received from the frontend
+                'ingredients' => $ingredientsWithLineBreaks, // Save ingredients with HTML <br> tags
                 'image' => $imagePath,
                 'category_id' => $request->input('category_id'),
             ]);
