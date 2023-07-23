@@ -53,6 +53,8 @@ class RecipeController extends Controller
     public function store(Request $request)
     {
         try {
+
+            \Log::info('Received Data:', $request->all());
             $request->validate([
                 'title' => 'required',
                 'body' => 'required',
