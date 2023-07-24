@@ -60,7 +60,8 @@ class RecipeController extends Controller
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validation rules for the image file
                 'image_url' => 'nullable|url', // Validation rule for the image URL
                 'category_id' => 'required|exists:categories,id',
-                'ingredients' => 'required|array', // Ensure that ingredients is an array
+
+
             ]);
 
             $imagePath = null;
@@ -80,14 +81,19 @@ class RecipeController extends Controller
                 Storage::disk('public')->put('recipe_images/' . $fileName, $imageData);
                 $imagePath = 'storage/recipe_images/' . $fileName;
             }
+
+            // Convert ingredients array to a JSON string
+            $ingredientsJson = json_encode($request->input('ingredients'));
+
             $recipe = Recipe::create([
                 'title' => $request->input('title'),
                 'category' => $request->input('category'),
                 'body' => $request->input('body'),
-                'ingredients' => $request->input('ingredients'), // Save ingredients as an array
+                'ingredients' => $ingredientsJson, // Save ingredients as a JSON string
                 'image' => $imagePath,
                 'category_id' => $request->input('category_id'),
             ]);
+
             // Retrieve the full image URL
             $imageUrl = $imagePath ? url(Storage::url($imagePath)) : null;
 
