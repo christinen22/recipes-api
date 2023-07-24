@@ -60,12 +60,8 @@ class RecipeController extends Controller
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validation rules for the image file
                 'image_url' => 'nullable|url', // Validation rule for the image URL
                 'category_id' => 'required|exists:categories,id',
-
-
             ]);
-
             $imagePath = null;
-
             // Handle image upload
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
@@ -82,21 +78,21 @@ class RecipeController extends Controller
                 $imagePath = 'storage/recipe_images/' . $fileName;
             }
 
-            // Convert ingredients array to a JSON string
-            $ingredientsJson = json_encode($request->input('ingredients'));
+            // Convert ingredients to have actual line breaks (\n)
+
+            $ingredients = $request->input('ingredients');
+            $ingredientsWithLineBreaks = str_replace("\n* ", "\n", $ingredients);
 
             $recipe = Recipe::create([
                 'title' => $request->input('title'),
                 'category' => $request->input('category'),
                 'body' => $request->input('body'),
-                'ingredients' => $ingredientsJson, // Save ingredients as a JSON string
+                'ingredients' => $ingredientsWithLineBreaks, // Save ingredients with HTML <br> tags
                 'image' => $imagePath,
                 'category_id' => $request->input('category_id'),
             ]);
-
             // Retrieve the full image URL
             $imageUrl = $imagePath ? url(Storage::url($imagePath)) : null;
-
             // Return the response with the recipe and image URL
             return response()->json([
                 'recipe' => $recipe,
@@ -106,7 +102,6 @@ class RecipeController extends Controller
             return response()->json(['message' => 'Error: ' . $e->getMessage()], 500);
         }
     }
-
 
     /**
      * Display the specified resource.
