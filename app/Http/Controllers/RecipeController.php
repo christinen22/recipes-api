@@ -84,6 +84,9 @@ class RecipeController extends Controller
             $ingredients = $request->input('ingredients');
             $ingredientsWithLineBreaks = str_replace('\n', "\n", $ingredients);
 
+            // Decode the JSON string to convert it back to an array
+            $ingredientsArray = json_decode($ingredientsWithLineBreaks);
+
             $recipe = Recipe::create([
                 'title' => $request->input('title'),
                 'category' => $request->input('category'),
