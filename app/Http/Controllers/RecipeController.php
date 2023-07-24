@@ -78,15 +78,18 @@ class RecipeController extends Controller
                 $imagePath = 'storage/recipe_images/' . $fileName;
             }
 
+            // Convert ingredients to have actual line breaks (\n)
+            $ingredients = $request->input('ingredients');
+            $ingredientsWithLineBreaks = str_replace("\\n", "\n", $ingredients);
+
             $recipe = Recipe::create([
                 'title' => $request->input('title'),
                 'category' => $request->input('category'),
                 'body' => $request->input('body'),
-                'ingredients' => $request->input('ingredients'), // Save ingredients as is to try
+                'ingredients' => $ingredientsWithLineBreaks,
                 'image' => $imagePath,
                 'category_id' => $request->input('category_id'),
             ]);
-
             // Retrieve the full image URL
             $imageUrl = $imagePath ? url(Storage::url($imagePath)) : null;
             // Return the response with the recipe and image URL
