@@ -59,6 +59,7 @@ class RecipeController extends Controller
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validation rules for the image file
                 'image_url' => 'nullable|url', // Validation rule for the image URL
                 'category_id' => 'required|exists:categories,id',
+
             ]);
 
             $imagePath = null;
@@ -81,16 +82,19 @@ class RecipeController extends Controller
 
             // Convert ingredients to have actual line breaks (\n)
             $ingredients = $request->input('ingredients');
-            $ingredientsWithLineBreaks = implode("\n", $ingredients);
+            $ingredientsWithLineBreaks = str_replace('\n', "\n", $ingredients);
 
+            // Create the recipe with the correct ingredients format (array instead of JSON string)
             $recipe = Recipe::create([
                 'title' => $request->input('title'),
                 'category' => $request->input('category'),
                 'body' => $request->input('body'),
-                'ingredients' => $ingredientsWithLineBreaks, // Save ingredients with actual line breaks
+                'ingredients' => explode("\n", $ingredientsWithLineBreaks), // Save ingredients as an array
                 'image' => $imagePath,
                 'category_id' => $request->input('category_id'),
             ]);
+
+
 
             // Retrieve the full image URL
             $imageUrl = $imagePath ? url(Storage::url($imagePath)) : null;
@@ -104,7 +108,6 @@ class RecipeController extends Controller
             return response()->json(['message' => 'Error: ' . $e->getMessage()], 500);
         }
     }
-
 
 
     /**
