@@ -84,17 +84,16 @@ class RecipeController extends Controller
             $ingredients = $request->input('ingredients');
             $ingredientsWithLineBreaks = str_replace('\n', "\n", $ingredients);
 
-            // Decode the JSON string to convert it back to an array
-            $ingredientsArray = json_decode($ingredientsWithLineBreaks);
-
+            // Create the recipe with the correct ingredients format (array instead of JSON string)
             $recipe = Recipe::create([
                 'title' => $request->input('title'),
                 'category' => $request->input('category'),
                 'body' => $request->input('body'),
-                'ingredients' => $ingredientsWithLineBreaks, // Save ingredients with actual line breaks
+                'ingredients' => explode("\n", $ingredientsWithLineBreaks), // Save ingredients as an array
                 'image' => $imagePath,
                 'category_id' => $request->input('category_id'),
             ]);
+
 
 
             // Retrieve the full image URL
