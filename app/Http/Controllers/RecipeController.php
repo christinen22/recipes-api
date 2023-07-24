@@ -89,7 +89,7 @@ class RecipeController extends Controller
                 'title' => $request->input('title'),
                 'category' => $request->input('category'),
                 'body' => $request->input('body'),
-                'ingredients' => explode("\n", $ingredientsWithLineBreaks), // Save ingredients as an array
+                'ingredients' => $ingredientsWithLineBreaks, // Save ingredients with actual line breaks
                 'image' => $imagePath,
                 'category_id' => $request->input('category_id'),
             ]);
