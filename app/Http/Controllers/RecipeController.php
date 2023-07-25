@@ -80,13 +80,13 @@ class RecipeController extends Controller
                 $imagePath = 'storage/recipe_images/' . $fileName;
             }
 
-            $ingredientsString = implode("\n", $request->input('ingredients'));
+            $ingredientsArray = json_decode($request->input('ingredients'), true);
 
             $recipe = Recipe::create([
                 'title' => $request->input('title'),
                 'category' => $request->input('category'),
                 'body' => $request->input('body'),
-                'ingredients' => $ingredientsString, // Save as newline-separated string
+                'ingredients' => $ingredientsArray,
                 'image' => $imagePath,
                 'category_id' => $request->input('category_id'),
             ]);
