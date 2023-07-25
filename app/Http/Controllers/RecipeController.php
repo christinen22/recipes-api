@@ -82,21 +82,18 @@ class RecipeController extends Controller
                 $imagePath = 'storage/recipe_images/' . $fileName;
             }
 
+            $ingredientsArray = json_decode($request->input('ingredients'), true);
 
             $recipe = Recipe::create([
                 'title' => $request->input('title'),
-                'category' => $request->input('category'),
+                'category_id' => $request->input('category_id'), // Assign the category_id directly
                 'body' => $request->input('body'),
-                'ingredients' => $request->input('ingredients'),
+                'ingredients' => $ingredientsArray,
                 'image' => $imagePath,
-                'category_id' => $request->input('category_id'),
             ]);
-
-
 
             // Retrieve the full image URL
             $imageUrl = $imagePath ? url(Storage::url($imagePath)) : null;
-
 
             // Return the response with CORS headers
             return response()->json([
