@@ -80,6 +80,7 @@ class RecipeController extends Controller
 
             // Convert the newline-separated string to an array
             $ingredientsArray = explode("\n", $request->input('ingredients'));
+            dd($ingredientsArray); // Added this line for debugging
 
             $recipe = Recipe::create([
                 'title' => $request->input('title'),
