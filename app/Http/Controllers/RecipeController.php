@@ -91,7 +91,7 @@ class RecipeController extends Controller
 
             // Retrieve the full image URL
             $imageUrl = $imagePath ? url(Storage::url($imagePath)) : null;
-            dd($ingredientsArray); // Added this line for debugging
+
 
             // Return the response with CORS headers
             return response()->json([
