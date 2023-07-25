@@ -64,6 +64,8 @@ class RecipeController extends Controller
                 'ingredients' => 'required|array',
             ]);
 
+            \Log::debug('Validation passed');
+
             $imagePath = null;
             // Handle image upload
             if ($request->hasFile('image')) {
@@ -94,12 +96,15 @@ class RecipeController extends Controller
             // Retrieve the full image URL
             $imageUrl = $imagePath ? url(Storage::url($imagePath)) : null;
 
+            \Log::debug('Recipe created');
+
             // Return the response with CORS headers
             return response()->json([
                 'recipe' => $recipe,
                 'image_url' => $imageUrl,
             ], 201)->header('Access-Control-Allow-Origin', '*');
         } catch (\Exception $e) {
+            \Log::error('Error: ' . $e->getMessage());
             return response()->json(['message' => 'Error: ' . $e->getMessage()], 500);
         }
     }
