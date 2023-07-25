@@ -78,14 +78,18 @@ class RecipeController extends Controller
                 $imagePath = 'storage/recipe_images/' . $fileName;
             }
 
+            // Convert the newline-separated string to an array
+            $ingredientsArray = explode("\n", $request->input('ingredients'));
+
             $recipe = Recipe::create([
                 'title' => $request->input('title'),
                 'category' => $request->input('category'),
                 'body' => $request->input('body'),
-                'ingredients' => $request->input('ingredients'), // Save ingredients as is to try
+                'ingredients' => $ingredientsArray, // Save ingredients as an array
                 'image' => $imagePath,
                 'category_id' => $request->input('category_id'),
             ]);
+
 
             // Retrieve the full image URL
             $imageUrl = $imagePath ? url(Storage::url($imagePath)) : null;
