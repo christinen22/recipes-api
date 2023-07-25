@@ -92,11 +92,11 @@ class RecipeController extends Controller
 
             // Retrieve the full image URL
             $imageUrl = $imagePath ? url(Storage::url($imagePath)) : null;
-            // Return the response with the recipe and image URL
+            // Return the response with CORS headers
             return response()->json([
                 'recipe' => $recipe,
                 'image_url' => $imageUrl,
-            ], 201);
+            ], 201)->header('Access-Control-Allow-Origin', '*');
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error: ' . $e->getMessage()], 500);
         }
