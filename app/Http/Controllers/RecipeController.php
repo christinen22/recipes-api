@@ -82,13 +82,12 @@ class RecipeController extends Controller
                 $imagePath = 'storage/recipe_images/' . $fileName;
             }
 
-            $ingredientsArray = json_decode($request->input('ingredients'), true);
 
             $recipe = Recipe::create([
                 'title' => $request->input('title'),
                 'category' => $request->input('category'),
                 'body' => $request->input('body'),
-                'ingredients' => $ingredientsArray,
+                'ingredients' => $request->input('ingredients'),
                 'image' => $imagePath,
                 'category_id' => $request->input('category_id'),
             ]);
