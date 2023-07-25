@@ -54,15 +54,17 @@ class RecipeController extends Controller
     public function store(Request $request)
     {
         \Log::debug($request->all());
+
         try {
             $request->validate([
                 'title' => 'required',
                 'body' => 'required',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validation rules for the image file
-                'image_url' => 'nullable|url', // Validation rule for the image URL
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'image_url' => 'nullable|url',
                 'category_id' => 'required|exists:categories,id',
-                'ingredients' => 'required|array',
+                'ingredients' => 'required|array', // Expecting ingredients as an array
             ]);
+
             $imagePath = null;
             // Handle image upload
             if ($request->hasFile('image')) {
