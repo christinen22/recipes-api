@@ -53,6 +53,7 @@ class RecipeController extends Controller
      */
     public function store(Request $request)
     {
+        \Log::debug($request->all());
         try {
             $request->validate([
                 'title' => 'required',
@@ -60,6 +61,7 @@ class RecipeController extends Controller
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validation rules for the image file
                 'image_url' => 'nullable|url', // Validation rule for the image URL
                 'category_id' => 'required|exists:categories,id',
+                'ingredients' => 'required|array',
             ]);
             $imagePath = null;
             // Handle image upload
