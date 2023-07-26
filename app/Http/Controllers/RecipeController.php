@@ -84,17 +84,19 @@ class RecipeController extends Controller
             }
 
             \Log::debug('Validation passed');
-
-            // Decode the JSON string into an array
-            $ingredientsArray = json_decode($request->input('ingredients'), true);
+            $ingredients = $request->input('ingredients');
+            if (is_array($ingredients)) {
+                $ingredients = json_encode($ingredients);
+            }
 
             $recipe = Recipe::create([
                 'title' => $request->input('title'),
-                'category_id' => $request->input('category_id'), // Assign the category_id directly
+                'category_id' => $request->input('category_id'),
                 'body' => $request->input('body'),
-                'ingredients' => $ingredientsArray, // Use the decoded array
+                'ingredients' => $ingredients,
                 'image' => $imagePath,
             ]);
+
 
             // Retrieve the full image URL
             $imageUrl = $imagePath ? url(Storage::url($imagePath)) : null;
