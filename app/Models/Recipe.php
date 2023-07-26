@@ -13,6 +13,10 @@ class Recipe extends Model
         'title', 'ingredients', 'body', 'image', 'category_id'
     ];
 
+    protected $casts = [
+        'ingredients' => 'array',
+    ];
+
     public function category()
     {
         return $this->belongsTo(Category::class);
