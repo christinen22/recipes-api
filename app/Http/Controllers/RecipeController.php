@@ -80,7 +80,7 @@ class RecipeController extends Controller
                 $imagePath = 'storage/recipe_images/' . $fileName;
             }
 
-            // Convert ingredients to a JSON string
+            // Save ingredients as a JSON string
             $ingredients = json_encode($request->input('ingredients'));
 
             $recipe = Recipe::create([
