@@ -53,7 +53,6 @@ class RecipeController extends Controller
      */
     public function store(Request $request)
     {
-        \Log::debug($request->all());
         try {
             $request->validate([
                 'title' => 'required',
@@ -63,8 +62,6 @@ class RecipeController extends Controller
                 'category_id' => 'required|exists:categories,id',
                 'ingredients' => 'required|array',
             ]);
-
-            \Log::debug('Validation passed');
 
             $imagePath = null;
             // Handle image upload
@@ -83,11 +80,8 @@ class RecipeController extends Controller
                 $imagePath = 'storage/recipe_images/' . $fileName;
             }
 
-            \Log::debug('Validation passed');
-            $ingredients = $request->input('ingredients');
-            if (is_array($ingredients)) {
-                $ingredients = json_encode($ingredients);
-            }
+            // Convert ingredients to a JSON string
+            $ingredients = json_encode($request->input('ingredients'));
 
             $recipe = Recipe::create([
                 'title' => $request->input('title'),
@@ -97,11 +91,8 @@ class RecipeController extends Controller
                 'image' => $imagePath,
             ]);
 
-
             // Retrieve the full image URL
             $imageUrl = $imagePath ? url(Storage::url($imagePath)) : null;
-
-            \Log::debug('Recipe created');
 
             // Return the response with CORS headers
             return response()->json([
@@ -113,6 +104,7 @@ class RecipeController extends Controller
             return response()->json(['message' => 'Error: ' . $e->getMessage()], 500);
         }
     }
+
 
     /**
      * Display the specified resource.
