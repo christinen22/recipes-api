@@ -81,14 +81,14 @@ class RecipeController extends Controller
                 $imagePath = 'storage/recipe_images/' . $fileName;
             }
 
-            // Join ingredients with line breaks ("\n")
-            $ingredientsString = implode("\n", $request->input('ingredients'));
+            // Convert ingredients array to a single string with line breaks
+            $ingredientsWithLineBreaks = implode("\n", $request->input('ingredients'));
 
             $recipe = Recipe::create([
                 'title' => $request->input('title'),
                 'category_id' => $request->input('category_id'),
                 'body' => $request->input('body'),
-                'ingredients' => $ingredientsString,
+                'ingredients' => $ingredientsWithLineBreaks,
                 'image' => $imagePath,
             ]);
 
