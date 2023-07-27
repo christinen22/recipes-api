@@ -62,7 +62,7 @@ class RecipeController extends Controller
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'image_url' => 'nullable|url',
                 'category_id' => 'required|exists:categories,id',
-                //'ingredients' => 'required|array',
+                'ingredients' => 'required|array', // Treat 'ingredients' as an array
             ]);
 
             $imagePath = null;
@@ -92,7 +92,7 @@ class RecipeController extends Controller
                 'title' => $request->input('title'),
                 'category_id' => $request->input('category_id'),
                 'body' => $request->input('body'),
-                'ingredients' => $ingredientsJson, // Save the JSON string
+                'ingredients' => $ingredientsWithLineBreaks, // As an array of strings
                 'image' => $imagePath,
             ]);
 
