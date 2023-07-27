@@ -62,7 +62,7 @@ class RecipeController extends Controller
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'image_url' => 'nullable|url',
                 'category_id' => 'required|exists:categories,id',
-                'ingredients' => 'required|array',
+                //'ingredients' => 'required|array',
             ]);
 
             $imagePath = null;
