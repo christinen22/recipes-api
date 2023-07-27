@@ -53,7 +53,6 @@ class RecipeController extends Controller
      */
     public function store(Request $request)
     {
-
         \Log::debug('Received Data:', $request->all());
         try {
             $request->validate([
@@ -62,7 +61,7 @@ class RecipeController extends Controller
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'image_url' => 'nullable|url',
                 'category_id' => 'required|exists:categories,id',
-                //'ingredients' => 'required|array', // Treat 'ingredients' as an array
+                'ingredients' => 'required|array', // Treat 'ingredients' as an array
             ]);
 
             $imagePath = null;
@@ -82,20 +81,16 @@ class RecipeController extends Controller
                 $imagePath = 'storage/recipe_images/' . $fileName;
             }
 
-            // Convert ingredients JSON string to array
-            $ingredients = json_decode($request->input('ingredients'), true);
-
-            // Convert ingredients array to JSON string before saving it to the database
-            $ingredientsJson = json_encode($ingredients);
+            // Join ingredients with line breaks ("\n")
+            $ingredientsString = implode("\n", $request->input('ingredients'));
 
             $recipe = Recipe::create([
                 'title' => $request->input('title'),
                 'category_id' => $request->input('category_id'),
                 'body' => $request->input('body'),
-                'ingredients' => $ingredientsWithLineBreaks, // As an array of strings
+                'ingredients' => $ingredientsString,
                 'image' => $imagePath,
             ]);
-
 
             // Retrieve the full image URL
             $imageUrl = $imagePath ? url(Storage::url($imagePath)) : null;
