@@ -60,7 +60,7 @@ class RecipeController extends Controller
                 'body' => 'required',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'image_url' => 'nullable|url',
-                'category_id' => 'required|exists:categories,id',
+                'category_id' => 'nullable|exists:categories,id',
                 'ingredients' => 'required|array', // Treat 'ingredients' as an array
             ]);
 
