@@ -80,14 +80,16 @@ class RecipeController extends Controller
                 $imagePath = 'storage/recipe_images/' . $fileName;
             }
 
-            // Save ingredients as a JSON string
-            $ingredients = json_encode($request->input('ingredients'));
+            // Convert ingredients to have actual line breaks (\n)
+            $ingredients = $request->input('ingredients');
+
+            $ingredientsWithLineBreaks = str_replace("\n* ", "\n", $ingredients);
 
             $recipe = Recipe::create([
                 'title' => $request->input('title'),
                 'category_id' => $request->input('category_id'),
                 'body' => $request->input('body'),
-                'ingredients' => $ingredients,
+                'ingredients' => $ingredientsWithLineBreaks,
                 'image' => $imagePath,
             ]);
 
