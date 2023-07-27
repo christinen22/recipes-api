@@ -82,10 +82,11 @@ class RecipeController extends Controller
                 $imagePath = 'storage/recipe_images/' . $fileName;
             }
 
-            // Convert ingredients to have actual line breaks (\n)
-            $ingredients = $request->input('ingredients');
+            // Convert ingredients JSON string to array
+            $ingredients = json_decode($request->input('ingredients'), true);
 
-            $ingredientsWithLineBreaks = str_replace("\n* ", "\n", $ingredients);
+            // Convert ingredients array to have actual line breaks (\n)
+            $ingredientsWithLineBreaks = implode("\n", $ingredients);
 
             $recipe = Recipe::create([
                 'title' => $request->input('title'),
@@ -94,6 +95,7 @@ class RecipeController extends Controller
                 'ingredients' => $ingredientsWithLineBreaks,
                 'image' => $imagePath,
             ]);
+
 
             // Retrieve the full image URL
             $imageUrl = $imagePath ? url(Storage::url($imagePath)) : null;
